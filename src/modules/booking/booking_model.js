@@ -72,7 +72,15 @@ module.exports = {
       )
     })
   },
-  deleteData: () => {
-    return new Promise((resolve, reject) => {})
+  deleteData: (setData, id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'DELETE FROM booking WHERE booking_id = ?',
+        id,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
   }
 }

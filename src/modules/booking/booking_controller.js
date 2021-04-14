@@ -86,7 +86,16 @@ module.exports = {
   },
   deleteBooking: async (req, res) => {
     try {
-      console.log(req.params)
+      const { id } = req.params
+
+      const { bookingName, bookingPrice } = req.body
+      const setData = {
+        booking_name: bookingName,
+        booking_price: bookingPrice
+      }
+      const result = await bookingModel.deleteData(setData, id)
+      return helper.response(res, 200, 'Success Delete Booking', result)
+      // console.log(req.params)
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
     }
