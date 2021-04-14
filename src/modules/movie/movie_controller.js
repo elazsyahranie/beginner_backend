@@ -72,11 +72,17 @@ module.exports = {
     try {
       const { id } = req.params
 
-      const { movieName, movieCategory, movieReleaseDate } = req.body
+      const {
+        movieName,
+        movieCategory,
+        movieReleaseDate,
+        movieDuration
+      } = req.body
       const setData = {
         movie_name: movieName,
         movie_category: movieCategory,
-        movie_release_date: movieReleaseDate
+        movie_release_date: movieReleaseDate,
+        movie_duration: movieDuration
       }
       const result = await movieModel.updateData(setData, id)
       return helper.response(res, 200, 'Success Update Movie', result)
@@ -86,7 +92,17 @@ module.exports = {
   },
   deleteMovie: async (req, res) => {
     try {
-      console.log(req.params)
+      const { id } = req.params
+
+      const { movieName, movieCategory, movieReleaseDate } = req.body
+      const setData = {
+        movie_name: movieName,
+        movie_category: movieCategory,
+        movie_release_date: movieReleaseDate
+      }
+      const result = await movieModel.updateData(setData, id)
+      return helper.response(res, 200, `Success Delete Movie ${id}`, result)
+      // console.log(req.params)
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
     }
