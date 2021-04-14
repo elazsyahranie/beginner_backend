@@ -54,13 +54,19 @@ module.exports = {
   },
   postMovie: async (req, res) => {
     try {
-      console.log(req.body)
-      const { movieName, movieCategory, movieReleaseDate } = req.body
+      const {
+        movieName,
+        movieCategory,
+        movieReleaseDate,
+        movieDuration,
+        movieSynopsis
+      } = req.body
       const setData = {
         movie_name: movieName,
         movie_category: movieCategory,
         movie_release_date: movieReleaseDate,
-        movie_updated_at: new Date(Date.now())
+        movie_duration: movieDuration,
+        movie_synopsis: movieSynopsis
       }
       const result = await movieModel.createData(setData)
       return helper.response(res, 200, 'Success Create Data', result)
@@ -76,13 +82,15 @@ module.exports = {
         movieName,
         movieCategory,
         movieReleaseDate,
-        movieDuration
+        movieDuration,
+        movieSynopsis
       } = req.body
       const setData = {
         movie_name: movieName,
         movie_category: movieCategory,
         movie_release_date: movieReleaseDate,
-        movie_duration: movieDuration
+        movie_duration: movieDuration,
+        movie_synopsis: movieSynopsis
       }
       const result = await movieModel.updateData(setData, id)
       return helper.response(res, 200, 'Success Update Movie', result)

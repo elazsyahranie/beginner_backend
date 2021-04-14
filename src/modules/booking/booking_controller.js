@@ -54,15 +54,17 @@ module.exports = {
   },
   postBooking: async (req, res) => {
     try {
-      console.log(req.body)
-      const { bookingName, bookingPrice } = req.body
+      const { bookingPaymentMethod } = req.body
       const setData = {
-        booking_name: bookingName,
-        booking_price: bookingPrice,
-        booking_updated_at: new Date(Date.now())
+        booking_payment_method: bookingPaymentMethod
       }
       const result = await bookingModel.createData(setData)
-      return helper.response(res, 200, 'Success Create Data', result)
+      return helper.response(
+        res,
+        200,
+        'Success Create New Payment Method',
+        result
+      )
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
     }
