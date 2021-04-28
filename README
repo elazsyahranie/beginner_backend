@@ -1,0 +1,6 @@
+README 
+1. jualkarcis_backend adalah kumpulan kode backend untuk project saya, JualKarcis, sebuah situs tempat penjualan karcis. 
+2. jualkarcis_backend dijalankan dengan bantuan node.js, XAMPP (Apache dan MySql). 
+
+Untuk di Postman 
+1. Jika ingin getAllData, atau getDataById, maka harus 'registrasi' atau 'login' terlebih dahulu. Sebelumnya.
