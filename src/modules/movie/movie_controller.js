@@ -1,3 +1,5 @@
+const redis = require('redis')
+const client = redis.createClient()
 const helper = require('../../helpers/wrapper')
 const movieModel = require('./movie_model')
 
@@ -22,14 +24,12 @@ module.exports = {
         totalData
       }
       const result = await movieModel.getDataAll(limit, offset)
-      return helper.response(
-        res,
-        200,
-        'Success Get Data',
-        'Data',
-        result,
-        pageInfo
+      client.setex(
+        `getmovie:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify({ result, pageInfo })
       )
+      return helper.response(res, 200, 'Success Get Data', result, pageInfo)
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
     }
@@ -39,6 +39,7 @@ module.exports = {
       const { id } = req.params
       const result = await movieModel.getDataById(id)
       if (result.length > 0) {
+        client.set(`getmovie:${id}`, JSON.stringify(result))
         return helper.response(res, 200, 'Success Get Data By Id', result)
       } else {
         return helper.response(
@@ -57,17 +58,17 @@ module.exports = {
       const {
         movieName,
         movieCategory,
-        movieReleaseDate,
-        movieDuration,
-        movieSynopsis
+        movieReleaseDate
+        //   movieDuration,
+        //   movieSynopsis
       } = req.body
       const setData = {
         movie_name: movieName,
         movie_category: movieCategory,
         movie_release_date: movieReleaseDate,
-        movie_duration: movieDuration,
-        movie_synopsis: movieSynopsis
+        movie_image: req.file ? req.file.filename : ''
       }
+      console.log(setData)
       const result = await movieModel.createData(setData)
       return helper.response(res, 200, 'Success Create Data', result)
     } catch (error) {
@@ -77,7 +78,6 @@ module.exports = {
   updateMovie: async (req, res) => {
     try {
       const { id } = req.params
-
       const {
         movieName,
         movieCategory,
@@ -100,15 +100,11 @@ module.exports = {
   },
   deleteMovie: async (req, res) => {
     try {
+      // 1. buat request di post
+      // 2. set up controller dan model
+      // 3. men-delete data yang ada di dala folder upload fs.unlink
       const { id } = req.params
-
-      const { movieName, movieCategory, movieReleaseDate } = req.body
-      const setData = {
-        movie_name: movieName,
-        movie_category: movieCategory,
-        movie_release_date: movieReleaseDate
-      }
-      const result = await movieModel.updateData(setData, id)
+      const result = await movieModel.deleteData(id)
       return helper.response(res, 200, `Success Delete Movie ${id}`, result)
       // console.log(req.params)
     } catch (error) {

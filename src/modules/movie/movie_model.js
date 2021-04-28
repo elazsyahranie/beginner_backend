@@ -68,7 +68,7 @@ module.exports = {
       )
     })
   },
-  deleteData: (setData, id) => {
+  deleteData: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
         'DELETE FROM movie WHERE movie_id = ?',

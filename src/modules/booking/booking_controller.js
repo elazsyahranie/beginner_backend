@@ -54,9 +54,15 @@ module.exports = {
   },
   postBooking: async (req, res) => {
     try {
-      const { bookingPaymentMethod } = req.body
+      const {
+        bookingPaymentMethod,
+        bookingTicket,
+        bookingTotalPrice
+      } = req.body
       const setData = {
-        booking_payment_method: bookingPaymentMethod
+        booking_payment_method: bookingPaymentMethod,
+        booking_ticket: bookingTicket,
+        booking_total_price: bookingTotalPrice
       }
       const result = await bookingModel.createData(setData)
       return helper.response(

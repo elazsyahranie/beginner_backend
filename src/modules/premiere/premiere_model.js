@@ -4,8 +4,8 @@ module.exports = {
   getDataAll: (limit, offset) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT * FROM premiere LIMIT ? OFFSET ?',
-        [limit, offset],
+        'SELECT * FROM premiere',
+        // [limit, offset],
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }
