@@ -22,7 +22,8 @@ const fileFilter = (req, file, cb) => {
   }
 }
 
-// tambahkan limit condition
+// Tambahkan limit condition
+// Berapa banyak file yang bisa diupload?
 const upload = multer({ storage, fileFilter }).single('movieImage')
 
 const uploadFilter = (req, res, next) => {

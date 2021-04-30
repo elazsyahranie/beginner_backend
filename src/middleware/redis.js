@@ -4,6 +4,7 @@ const helper = require('../helpers/wrapper')
 
 module.exports = {
   getMovieByIdRedis: (req, res, next) => {
+    const { id } = req.params // Destructuring untuk ${id}
     client.get(`getmovie:${id}`, (error, result) => {
       if (!error && result != null) {
         return helper.response(

@@ -34,25 +34,25 @@ module.exports = {
         user_email: userEmail
       })
       if (checkEmailUser.length > 0) {
+        // Artinya, jika alamat email yang kita gunakkan untuk login sudah terdaftar di website kita...
         const checkPassword = bcrypt.compareSync(
           userPassword,
           checkEmailUser[0].user_password
         )
         if (checkPassword) {
           const payload = checkEmailUser[0]
-          delete payload.user_password
+          delete payload.user_password // Nanti di postman, passwordnya yang asli tidak akan terlihat
           const token = jwt.sign({ ...payload }, 'RAHASIA', {
-            expiresIn: '24h'
+            expiresIn: '24h' // Akan expire dalam waktu 24 jam, lebih dari itu harug login lagi
           })
           const result = { ...payload, token }
-          return helper.response(res, 200, 'Success login !', result)
+          return helper.response(res, 200, 'Success login !', result) // ...jika password yang kita masukkan benar
         } else {
-          return helper.response(res, 400, 'Wrong password !')
+          return helper.response(res, 400, 'Wrong password !') // Kalau password salah
         }
       } else {
         return helper.response(res, 404, 'Email / Account Not registered')
       }
-      console.log(checkEmailUser)
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
     }

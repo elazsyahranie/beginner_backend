@@ -83,6 +83,7 @@ module.exports = {
         movieCategory,
         movieReleaseDate,
         movieDuration,
+        movieCasts,
         movieSynopsis
       } = req.body
       const setData = {
@@ -90,7 +91,9 @@ module.exports = {
         movie_category: movieCategory,
         movie_release_date: movieReleaseDate,
         movie_duration: movieDuration,
-        movie_synopsis: movieSynopsis
+        movie_casts: movieCasts,
+        movie_synopsis: movieSynopsis,
+        movie_image: req.file ? req.file.filename : ''
       }
       const result = await movieModel.updateData(setData, id)
       return helper.response(res, 200, 'Success Update Movie', result)
