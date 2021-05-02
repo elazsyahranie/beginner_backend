@@ -24,5 +24,16 @@ module.exports = {
         !error ? resolve(result) : reject(new Error(error))
       })
     })
+  },
+  updateData: (data) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'UPDATE * FROM user WHERE user_id = ?',
+        data,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
   }
 }

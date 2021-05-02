@@ -2,11 +2,13 @@ const bcrypt = require('bcrypt') // Untuk enkripsi password. Dengan bcrypt, sete
 const jwt = require('jsonwebtoken')
 const helper = require('../../helpers/wrapper') // Helper untuk response
 const authModel = require('./auth_model')
+require('dotenv').config()
+const nodemailer = require('nodemailer')
 
 module.exports = {
   register: async (req, res) => {
     try {
-      const { userEmail, userPassword, userName } = req.body // Destructuring data yang ditangkap dari request body
+      const { userEmail, userPassword, userName, userStatus } = req.body // Destructuring data yang ditangkap dari request body
       const salt = bcrypt.genSaltSync(10) // Berapa putaran enkripsinya?
       const encryptPassword = bcrypt.hashSync(userPassword, salt) // Hashing atau enkripsi userPassword, dirubah jadi "huruf dan angka ga jelas"
       console.log(`before Encrypt = ${userPassword}`) // Password asli, sebelum di encrypt. Masih jelas
@@ -14,15 +16,43 @@ module.exports = {
       const setData = {
         user_name: userName,
         user_email: userEmail,
+        user_status: 'Unveriied',
         user_password: encryptPassword // Simpan password yang sudah dienkripsi (encryptPassword), bukan yang asli (userPassword)
       } // Untuk menghubungkan kolom pada database dengan variable pada file auth_controller
       // --TUGAS--
       // kondisi cek email apakah ada di dalam database ?
       // jike ada response gagal = msg = email sudah pernah di daftarkan
       // jika tidak ada = menjalankan proses model register user
+      let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: process.env.SMTP_EMAIL, // generated ethereal user
+          pass: process.env.SMTP_PASSWORD // generated ethereal password
+        }
+      })
+
+      const mailOptions = {
+        from: '"Jualkarcis 👻" <elazaribrahim95@gmail.com>', // sender address
+        to: userEmail, // list of receivers
+        subject: 'Jualkarcis - Activation Email', // Subject line
+        html:
+          "<b>Click here to activate</b><a data-method=POST href='http://localhost:3001/api/v1/auth/user:id'>Click</>" // html body
+      }
+
+      await transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error)
+          return helper.response(res, 400, 'Email Not Send !')
+        } else {
+          console.log('Email sent: ' + info.response)
+          return helper.response(res, 200, 'Success Register User')
+        }
+      })
       const result = await authModel.register(setData)
-      // delete result.user_password
-      return helper.response(res, 200, 'Success Register User', result) // Error Message
+      delete result.user_password
+      return helper.response(res, 200, 'Success Register User', result)
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error) // Error Message
     }
@@ -53,6 +83,18 @@ module.exports = {
       } else {
         return helper.response(res, 404, 'Email / Account Not registered')
       }
+    } catch (error) {
+      return helper.response(res, 400, 'Bad Request', error)
+    }
+  },
+  activation: async (req, res) => {
+    try {
+      const { id } = req.params
+      const setData = {
+        user_status: 'Active'
+      }
+      const result = await authModel.updateData(setData, id)
+      return helper.response(res, 200, 'Account Have Been Verified !', result)
     } catch (error) {
       return helper.response(res, 400, 'Bad Request', error)
     }
