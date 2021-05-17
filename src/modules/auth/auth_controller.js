@@ -8,21 +8,17 @@ const nodemailer = require('nodemailer')
 module.exports = {
   register: async (req, res) => {
     try {
-      const { userEmail, userPassword, userName, userStatus } = req.body // Destructuring data yang ditangkap dari request body
+      const { userEmail, userPassword, userName, userId } = req.body // Destructuring data yang ditangkap dari request body
       const salt = bcrypt.genSaltSync(10) // Berapa putaran enkripsinya?
       const encryptPassword = bcrypt.hashSync(userPassword, salt) // Hashing atau enkripsi userPassword, dirubah jadi "huruf dan angka ga jelas"
       console.log(`before Encrypt = ${userPassword}`) // Password asli, sebelum di encrypt. Masih jelas
       console.log(`after Encrypt = ${encryptPassword}`) // Password setelah di encrypt, jadi "huruf dan angka gajelas"
       const setData = {
-        user_name: userName,
+        user_id: userId,
         user_email: userEmail,
-        user_status: 'Unveriied',
+        user_status: 'Unverified',
         user_password: encryptPassword // Simpan password yang sudah dienkripsi (encryptPassword), bukan yang asli (userPassword)
       } // Untuk menghubungkan kolom pada database dengan variable pada file auth_controller
-      // --TUGAS--
-      // kondisi cek email apakah ada di dalam database ?
-      // jike ada response gagal = msg = email sudah pernah di daftarkan
-      // jika tidak ada = menjalankan proses model register user
       let transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 587,
@@ -37,8 +33,7 @@ module.exports = {
         from: '"Jualkarcis 👻" <elazaribrahim95@gmail.com>', // sender address
         to: userEmail, // list of receivers
         subject: 'Jualkarcis - Activation Email', // Subject line
-        html:
-          "<b>Click here to activate</b><a data-method=POST href='http://localhost:3001/api/v1/auth/user:id'>Click</>" // html body
+        html: `<b>Click here to activate</b><a href='http://localhost:3001/api/v1/auth/${authModel.user_status}'>Click</>` // html body
       }
 
       await transporter.sendMail(mailOptions, function (error, info) {
@@ -50,6 +45,7 @@ module.exports = {
           return helper.response(res, 200, 'Success Register User')
         }
       })
+      console.log(setData)
       const result = await authModel.register(setData)
       delete result.user_password
       return helper.response(res, 200, 'Success Register User', result)

@@ -62,8 +62,10 @@ module.exports = {
       const setData = {
         booking_payment_method: bookingPaymentMethod,
         booking_ticket: bookingTicket,
-        booking_total_price: bookingTotalPrice
+        booking_total_price: bookingTotalPrice,
+        movie_image: req.file ? req.file.filename : ''
       }
+      console.log(setData)
       const result = await bookingModel.createData(setData)
       return helper.response(
         res,
@@ -79,10 +81,16 @@ module.exports = {
     try {
       const { id } = req.params
 
-      const { bookingName, bookingPrice } = req.body
+      const {
+        bookingPaymentMethod,
+        bookingTicket,
+        bookingTotalPrice
+      } = req.body
       const setData = {
-        booking_name: bookingName,
-        booking_price: bookingPrice
+        booking_payment_method: bookingPaymentMethod,
+        booking_ticket: bookingTicket,
+        booking_total_price: bookingTotalPrice,
+        movie_image: req.file ? req.file.filename : ''
       }
       const result = await bookingModel.updateData(setData, id)
       return helper.response(res, 200, 'Success Update booking', result)
